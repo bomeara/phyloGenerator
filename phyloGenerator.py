@@ -402,14 +402,14 @@ def referenceDownload(speciesList, geneName, referenceAlignment, iterCheck=20, f
                 return True
             else:
                 return False
-    
+
     finalSeqs = []
     edit = []
     #Strip the reference alignment for re-alignment
     strippedAlignment = []
     for i,seq in enumerate(referenceAlignment):
         strippedAlignment.append(SeqRecord(Seq(seq.seq.tostring().replace("-", "")), id=str(i)))
-    
+
     #Loop through the species to be downloaded
     for i,sp in enumerate(speciesList):
         print "...", sp
@@ -444,7 +444,7 @@ def referenceDownload(speciesList, geneName, referenceAlignment, iterCheck=20, f
         else:
             finalSeqs.append(())
             edit.append("")
-    
+
     return (finalSeqs, edit)
 
 
@@ -460,11 +460,11 @@ def findGenes(speciesList, geneNames, download=False, targetNoGenes=-1, noSeqs=1
         for i in range(len(geneHits)):
             if geneHits[i] == max(geneHits):
                 return i
-    
+
     if type(geneNames) is list:
         if targetNoGenes == -1:
             targetNoGenes = None
-        
+
         #Download number of genes and histories for each species
         searchResults = []
         foundSeqs = []
@@ -551,7 +551,7 @@ def alignSequences(seqList, method='muscle', tempStem='temp', timeout=99999999, 
         for seq in seqList:
             if seq[i]:
                 seqs.append(seq[i])
-        
+
         if 'muscle' in method:
             if verbose: print "......with MUSCLE"
             inputFile = tempStem + '.fasta'
@@ -578,7 +578,7 @@ def alignSequences(seqList, method='muscle', tempStem='temp', timeout=99999999, 
                 alignedSomething = True
             else:
                 raise RuntimeError("MUSCLE alignment not complete in time allowed")
-        
+
         if 'mafft' in method:
             if verbose: print "......with MAFFT"
             inputFile = tempStem + '.fasta'
@@ -597,7 +597,7 @@ def alignSequences(seqList, method='muscle', tempStem='temp', timeout=99999999, 
                 alignedSomething = True
             else:
                 raise RuntimeError("Mafft alignment not complete in time allowed")
-        
+
         if 'clustalo' in method:
             if verbose: print "......with Clustal-Omega"
             inputFile = tempStem + '.fasta'
@@ -616,7 +616,7 @@ def alignSequences(seqList, method='muscle', tempStem='temp', timeout=99999999, 
                     raise RuntimeError("Clustal-Omega unable to run:\n\tcan you write files where pG is installed?\tcheck your input sequences don't need trimming!")
             else:
                 raise RuntimeError("Clustal-o alignment not complete in time allowed")
-        
+
         if 'prank' in method:
             if verbose: print "......with Prank"
             inputFile = tempStem + '.fasta'
@@ -638,9 +638,9 @@ def alignSequences(seqList, method='muscle', tempStem='temp', timeout=99999999, 
                 alignedSomething = True
             else:
                 raise RuntimeError("Prank alignment not complete in time allowed")
-        
+
         output.append(geneOutput)
-    
+
     if not alignedSomething:
         raise RuntimeError("Alignment method must be 'muscle', 'mafft', 'clustalo' or 'prank'.")
     return output
@@ -660,7 +660,7 @@ def checkAlignmentList(alignList, method='length', gapType='-'):
             output['max'].append(max(gapNumber))
             output['min'].append(min(gapNumber))
         return output
-    
+
     def gapFraction(alignList, gapType):
         output = {'mean':[], 'median':[], 'max':[], 'min':[]}
         lengths = [x.get_alignment_length() for x in alignList]
@@ -671,13 +671,13 @@ def checkAlignmentList(alignList, method='length', gapType='-'):
             output['max'].append(gaps['max'][i] / float(lengths[i]))
             output['min'].append(gaps['min'][i] / float(lengths[i]))
         return output
-    
+
     def alignLen(gene):
         output = []
         for method in gene:
             output.append(method.get_alignment_length())
         return output
-    
+
     if method == 'length':
         return [alignLen(x) for x in alignList]
     elif method == 'gapNumber':
@@ -695,7 +695,7 @@ def checkSequenceList(seqList, method='length', tolerance=None):
         for i in range(len(seqList[0])):
             output.append([len(x[i]) for x in seqList])
         return output
-    
+
     def quantiles(seqList):
         seqLengths = seqLength(seqList)
         output = {'seqLengths':[], 'maxLength':[], 'minLength':[], 'quantileLengths':[], 'lowerQuantile':[], 'upperQuantile':[]}
@@ -711,7 +711,7 @@ def checkSequenceList(seqList, method='length', tolerance=None):
                 elif each[k] >= output['quantileLengths'][i][4]:
                     output['upperQuantile'][i][k] = True
         return output
-    
+
     if method == 'length':
         return seqLength(seqList)
     elif method == 'quantiles':
@@ -748,7 +748,7 @@ def sequenceDisplay(seqList, speciesNames, geneNames, seqDetect=None):
     for i,each in enumerate(geneNameLengths):
         if each < 6:
             geneNameLengths[i] = 6
-    
+
     #Print out details, doing things differently if we haven't analysed them
     if(seqDetect):
         #if seqDetect['tolerable']:
@@ -775,7 +775,7 @@ def sequenceDisplay(seqList, speciesNames, geneNames, seqDetect=None):
                 else:
                     #What *does* happen to empty sequences?
                     stars.append("   ")
-            
+
             row = str(i).ljust(len("Sp. ID ")) + str(speciesNames[i]).ljust(maxInputName)
             for k in range(len(seqList[i])):
                 row += str(len(seqList[i][k])).ljust(geneNameLengths[k]) + " " + stars[k] + " "
@@ -810,7 +810,7 @@ def alignmentDisplay(alignments, alignMethods, geneNames, alignDetect=None, seqL
                         print  '{ID:3}{alignment:<13}{length:<11}{medGaps:<16.1f}{sdGaps:<16.2f}{minMaxGaps:16}{medGapsFrac:<16.2f}{minMaxGapsFrac:15}'.format(ID=str(i), alignment=alignMethods[i], length=alignDetect['length'][alignNo][i], medGaps=alignDetect['noGaps'][alignNo]['median'][i], sdGaps=alignDetect['noGaps'][alignNo]['sd'][i], minMaxGaps=str(str(round(alignDetect['noGaps'][alignNo]['min'][i],3))+" - "+str(round(alignDetect['noGaps'][alignNo]['max'][i],3))), medGapsFrac=alignDetect['gapFraction'][alignNo]['median'][i], minMaxGapsFrac=str(str(round(alignDetect['gapFraction'][alignNo]['min'][i],3))+"-"+str(round(alignDetect['gapFraction'][alignNo]['max'][i],3))))
                 else:
                     print  '{ID:3}{alignment:<13}{length:<11}{medGaps:<16.1f}{sdGaps:<16.2f}{minMaxGaps:16}{medGapsFrac:<16.2f}{minMaxGapsFrac:15}'.format(ID=str(i), alignment=alignMethods[i], length=alignDetect['length'][alignNo][i], medGaps=alignDetect['noGaps'][alignNo]['median'][i], sdGaps=alignDetect['noGaps'][alignNo]['sd'][i], minMaxGaps=str(str(round(alignDetect['noGaps'][alignNo]['min'][i],3))+" - "+str(round(alignDetect['noGaps'][alignNo]['max'][i],3))), medGapsFrac=alignDetect['gapFraction'][alignNo]['median'][i], minMaxGapsFrac=str(str(round(alignDetect['gapFraction'][alignNo]['min'][i],3))+"-"+str(round(alignDetect['gapFraction'][alignNo]['max'][i],3))))
-        
+
         else:
             print "ID", "Alignment", "Length"
             for i in range(len(alignList)):
@@ -826,11 +826,11 @@ def treeDistances(trees, nReps, fileName='tempStem'):
             for line in f:
                 temp = line.strip()
                 alignRF.append(float(re.search("[0-9]{1}\.[0-9]+", temp).group()))
-    
+
     os.remove('RAxML_info.alignCheckTemp')
     os.remove('RAxML_RF-Distances.alignCheckTemp')
     os.remove(fileName)
-    
+
     #Go through and calculate means and SD on the basis of those RFs
     firstGroup = []
     secondGroup = []
@@ -855,7 +855,7 @@ def treeDistances(trees, nReps, fileName='tempStem'):
         else:
             first += 1
             second = first + 1
-    
+
     #Calcualte means, SDs, etc.
     means = [mean(firstGroup), mean(secondGroup), mean(betweenGroup)]
     SDs = [std(firstGroup), std(secondGroup), std(betweenGroup)]
@@ -943,7 +943,7 @@ def RAxML(alignment, method='localVersion', tempStem='temp', outgroup=None, time
             for i in range(0, len(partitions)-1):
                 f.write("DNA, position" + str(partitions[i]) + " = " + str(partitions[i]+1) + "-" + str(partitions[i+1]) + "\n")
         options += " -q " + tempStem + "_partitions.txt"
-    
+
     #Constraint
     if constraint:
         if constraint.is_bifurcating():
@@ -962,7 +962,7 @@ def RAxML(alignment, method='localVersion', tempStem='temp', outgroup=None, time
             with open(tempStem + "_constraint.tre", 'w') as f:
                 f.write(output)
     commandLine = raxmlVersion + raxmlCompile + fileLine + algorithm + DNAmodel + options
-    
+
     if not runNow:
         return commandLine
     pipe = TerminationPipe(commandLine, timeout)
@@ -1181,17 +1181,17 @@ def BEAST(alignment, method='GTR+GAMMA', tempStem='temp', timeout=999999999, con
                 f.write('           <parameter id="branchRates' + str(i) + '.categories" dimension="18"/>\n')
                 f.write('       </rateCategories>\n')
                 f.write('   </discretizedBranchRates>\n')
-                
+
                 f.write('   <rateStatistic id="meanRate' + str(i) + '" name="meanRate" mode="mean" internal="true" external="true">\n')
                 f.write('       <treeModel idref="treeModel"/>\n')
                 f.write('       <discretizedBranchRates idref="branchRates' + str(i) + '"/>\n')
                 f.write('   </rateStatistic>\n')
-                
+
                 f.write('   <rateStatistic id="coefficientOfVariation' + str(i) + '" name="coefficientOfVariation" mode="coefficientOfVariation" internal="true" external="true">\n')
                 f.write('       <treeModel idref="treeModel"/>\n')
                 f.write('       <discretizedBranchRates idref="branchRates' + str(i) + '"/>\n')
                 f.write('   </rateStatistic>\n')
-                
+
                 f.write('   <rateCovarianceStatistic id="covariance' + str(i) + '" name="covariance">\n')
                 f.write('       <treeModel idref="treeModel"/>\n')
                 f.write('       <discretizedBranchRates idref="branchRates' + str(i) + '"/>\n')
@@ -1213,17 +1213,17 @@ def BEAST(alignment, method='GTR+GAMMA', tempStem='temp', timeout=999999999, con
             f.write('           <parameter id="branchRates.categories" dimension="18"/>\n')
             f.write('       </rateCategories>\n')
             f.write('   </discretizedBranchRates>\n')
-            
+
             f.write('   <rateStatistic id="meanRate" name="meanRate" mode="mean" internal="true" external="true">\n')
             f.write('       <treeModel idref="treeModel"/>\n')
             f.write('       <discretizedBranchRates idref="branchRates"/>\n')
             f.write('   </rateStatistic>\n')
-            
+
             f.write('   <rateStatistic id="coefficientOfVariation" name="coefficientOfVariation" mode="coefficientOfVariation" internal="true" external="true">\n')
             f.write('       <treeModel idref="treeModel"/>\n')
             f.write('       <discretizedBranchRates idref="branchRates"/>\n')
             f.write('   </rateStatistic>\n')
-            
+
             f.write('   <rateCovarianceStatistic id="covariance" name="covariance">\n')
             f.write('       <treeModel idref="treeModel"/>\n')
             f.write('       <discretizedBranchRates idref="branchRates"/>\n')
@@ -1342,7 +1342,7 @@ def BEAST(alignment, method='GTR+GAMMA', tempStem='temp', timeout=999999999, con
                     raise RuntimeError("No valid DNA substituion model specified for BEAST.")
                 f.write('       </substitutionModel>\n')
                 f.write('   </siteModel>\n')
-        
+
         else:
             f.write('   <!-- site model                                                              -->\n')
             f.write('   <siteModel id="siteModel">\n')
@@ -1439,7 +1439,7 @@ def BEAST(alignment, method='GTR+GAMMA', tempStem='temp', timeout=999999999, con
                 f.write('       <scaleOperator scaleFactor="0.75" weight="0.1">\n')
                 f.write('           <parameter idref="alpha"/>\n')
                 f.write('       </scaleOperator>\n')
-        
+
         if not completeConstraint:
             f.write('       <subtreeSlide size="0.0092" gaussian="true" weight="15">\n')
             f.write('           <treeModel idref="treeModel"/>\n')
@@ -1615,7 +1615,7 @@ def BEAST(alignment, method='GTR+GAMMA', tempStem='temp', timeout=999999999, con
                         f.write('           <parameter idref="alpha' + str(i) + '"/>\n')
         else:
             f.write('           <parameter idref="alpha"/>\n')
-        
+
         if type(alignment) is list:
             for i,align in enumerate(alignment):
                 f.write('           <parameter idref="ucld.mean' + str(i) + '"/>\n')
@@ -1653,7 +1653,7 @@ def BEAST(alignment, method='GTR+GAMMA', tempStem='temp', timeout=999999999, con
         f.write('       </property>\n')
         f.write('   </report>\n')
         f.write('</beast>\n')
-    
+
     if overwrite:
         if sys.platform == "linux2" or no_beagle==True:
             commandLine = "beast -beagle_off -overwrite " + tempStem + "_BEAST.xml"
@@ -1664,10 +1664,10 @@ def BEAST(alignment, method='GTR+GAMMA', tempStem='temp', timeout=999999999, con
             commandLine = "beast " + tempStem + "_BEAST.xml"
         else:
             commandLine = "beast -beagle_off " + tempStem + "_BEAST.xml"
-    
+
     if not runNow:
         return commandLine
-    
+
     pipe = TerminationPipe(commandLine, timeout)
     if sys.platform == "win32":
         pipe.run(silent=False, changeDir=False)
@@ -1867,9 +1867,9 @@ def createConstraintTree(spNames, method="phylomaticTaxonomy", fileName='', temp
             for gList in groupedLists:
                 for each in gList:
                     del each[1]
-            
+
             return "(" + ",".join([recursiveTree(x) for x in groupedLists]) + ")"
-    
+
     if method == "phylomaticTaxonomy":
         phylogenyFile = ' -f ' + fileName
         taxaFile = ' -t ' + spNames
@@ -1882,7 +1882,7 @@ def createConstraintTree(spNames, method="phylomaticTaxonomy", fileName='', temp
             return constraint
         else:
             raise RuntimeError("Phylomatic did not run correctly")
-    
+
     elif method == "GenBank":
         print "THIS DOESN'T WORK!!!!!!!!"
         lineages = [findLineage(x) for x in spNames]
@@ -1892,6 +1892,7 @@ def createConstraintTree(spNames, method="phylomaticTaxonomy", fileName='', temp
 
 def metal(alignList, tempStem='tempMetal', timeout=100):
     #Write out alignments
+    print "Removed metal dependency check on install, so this command may fail"
     distances = []
     for i,gene in enumerate(alignList):
         alignLocations = []
@@ -1911,7 +1912,7 @@ def metal(alignList, tempStem='tempMetal', timeout=100):
         for i,location in enumerate(alignLocations):
             os.remove(location)
         distances.append(geneDistances)
-    
+
     return distances
 
 def dirExistsWritable(dir):
@@ -1937,7 +1938,7 @@ class TerminationPipe(object):
         self.stderr = 'EMPTY'
         self.stdout = 'EMPTY'
         self.silent = silent
-    
+
     def run(self, silent=None, changeDir=True):
         def silentTarget():
             if sys.platform == 'win32':
@@ -1951,7 +1952,7 @@ class TerminationPipe(object):
                 else:
                     self.process = subprocess.Popen(self.cmd, stdout=subprocess.PIPE,shell=True, stderr=subprocess.PIPE)
             self.output = self.process.communicate()
-        
+
         def loudTarget():
             if sys.platform == 'win32':
                 if changeDir:
@@ -1964,7 +1965,7 @@ class TerminationPipe(object):
                 else:
                     self.process = subprocess.Popen(self.cmd, shell=False)
             self.output=self.process.communicate()
-        
+
         if silent: self.silent = silent
         if self.silent:
             thread = threading.Thread(target=silentTarget)
@@ -2020,10 +2021,10 @@ class PhyloGenerator:
             self.taxonIDs = True
         else:
             self.taxonIDs = False
-        
+
         #Backup working directory
         self.oldDirectory = os.getcwd()
-        
+
         #Stem name
         if args.name:
             self.stem = args.name
@@ -2031,7 +2032,7 @@ class PhyloGenerator:
         else:
             print "\nPlease input a 'stem' name to act as a prefix to all output (e.g., 'stemName_phylogeny.tre')\n"
             self.stem = raw_input("Stem name: ")
-        
+
         #Working directory
         if args.wd:
             if os.path.exists(args.wd):
@@ -2062,24 +2063,24 @@ class PhyloGenerator:
                             print "\nWorking directory '" + self.workingDirectory + "'not writable. Try again..."
                     else:
                         locker = False
-        
+
         #Check pG is writable
         if not dirExistsWritable(os.getcwd()):
             print "Current working directory or install location of phyloGenerator is not writable."
             print "Cannot continue; exiting..."
             sys.exit()
-        
+
         #Email
         if args.email:
             self.email = args.email
             Entrez.email = self.email
-        
+
         #Timeout
         if args.delay:
             self.delay = int(args.delay)
         else:
             self.delay = 5
-        
+
         #Gene
         self.nGenes = -1
         if args.gene:
@@ -2123,29 +2124,29 @@ class PhyloGenerator:
                         locker = False
                     else:
                         print "...you cannot continue without enter at least one gene name."
-        
+
         #Gene Number
         if args.nGenes:
             self.nGenes = int(args.nGenes)
-        
+
         #FASTA input
         if args.dna:
             self.loadDNAFile(args.dna)
-        
+
         if args.species:
             self.loadGenBank(args.species, args.referenceDownload)
 
         if args.existingAlignment:
             self.loadDNAAlignment(args.existingAlignment)
-        
+
         #Alignment method
         # - stupidly, this contrasts with 'self.alignmentMethods', which is a list... Fix this when you clean up the self.align method...
         if args.alignment:
             self.alignmentMethod = args.alignment
-        
+
         if args.phylogen:
             self.phylogenyMethods = args.phylogen
-        
+
         #Constraint tree
         self.constraintMethod = ''
         #Phylomatic
@@ -2157,15 +2158,15 @@ class PhyloGenerator:
         else:
             self.phylomaticPhylogeny = None
             self.phylomaticTaxonomy = None
-        
+
         self.constraintRFs = []
-        
+
         #Pre-supplied
         if args.consTree:
             self.constraintFile = args.consTree
             self.constraintMethod = 'newick'
             self.constraint = Phylo.read(self.constraintFile, 'newick')
-        
+
         #Options file
         if args.options:
             options = []
@@ -2190,7 +2191,7 @@ class PhyloGenerator:
                         self.seqChoice = 'targetLength'
                     else:
                         self.seqChoice = temp
-    
+
     def loadDNAAlignment(self, inputFile=""):
         files = inputFile.split(",")
         try:
@@ -2210,7 +2211,7 @@ class PhyloGenerator:
                     print "...pausing the program for five seconds to make this warning obvious..."
                     time.sleep(5)
                     break
-    
+
     def loadDNAFile(self, inputFile=""):
         def doWork(inputFile):
             self.fastaFile = inputFile
@@ -2221,7 +2222,7 @@ class PhyloGenerator:
             except IOError:
                 print "\nDNA file(s) not found. Please try again!"
                 return False
-                
+
             #Get unique set of species, alphabetise, and link everything up
             species = list(set([seq.name for seqs in files for seq in seqs]))
             species.sort()
@@ -2234,12 +2235,12 @@ class PhyloGenerator:
                             break
                     else:
                         self.sequences[i].append([])
-            
+
             self.sequenceEdits = [["" for i in each] for each in self.sequences]
             self.codonModels = ["Standard" for each in self.sequences]
             self.speciesNames = species
             return True
-        
+
         if inputFile:
             check = doWork(inputFile)
             if not check:
@@ -2257,7 +2258,7 @@ class PhyloGenerator:
                 else:
                     print "\nNo DNA loaded"
                     locker = False
-    
+
     def loadGenBank(self, inputFile="", refSeqsLocation=""):
         if inputFile:
             try:
@@ -2288,7 +2289,7 @@ class PhyloGenerator:
                     print "\nNo DNA downloaded"
                     locker = False
                     aborted = True
-        
+
         if not aborted:
             print "\n", len(self.speciesNames), "species loaded."
             if not self.email:
@@ -2334,7 +2335,7 @@ class PhyloGenerator:
                                 else:
                                     print "You've given a different number of gene names and reference sequences."
                                     print "Exiting..."
-                                    sys.exit() 
+                                    sys.exit()
                             else:
                                 locker = False
                                 self.sequences, self.genes = findGenes(self.speciesNames, self.genes, seqChoice=self.seqChoice, verbose=True, download=True, thorough=True, targetNoGenes=self.nGenes, spacer=self.spacer, delay=self.delay, taxonIDs=self.taxonIDs)
@@ -2357,7 +2358,7 @@ class PhyloGenerator:
                 print "ERROR. You need to specify the gene names you're using when using reference sequences"
                 print "Something like '-gene rbcL,matK'"
                 sys.exit()
-        
+
         #Set gene types
         print "\nChoosing DNA Sequence Type"
         print ""
@@ -2388,7 +2389,7 @@ class PhyloGenerator:
                 locker = False
             except:
                 print "...that's not a number. Try again!"
-        
+
         #Download DNA
         seqs = []; edits = []
         print "\nStarting referenceDownload - now would be a good time to put the kettle on..."
@@ -2399,13 +2400,13 @@ class PhyloGenerator:
             seqs[i], edits[i] = referenceDownload(self.speciesNames, self.genes[i], align[0][0], tolerance=int(0.01 * self.referenceTolerance * align[0][0].get_alignment_length()))
         for i,sp in enumerate(self.speciesNames):
             self.sequences.append([x[i] for x in seqs])
-            self.sequenceEdits.append([x[i] for x in edits])        
-    
+            self.sequenceEdits.append([x[i] for x in edits])
+
     def dnaChecking(self, tolerance=0.1):
         self.tolerance = tolerance
         self.dnaCheck = checkSequenceList(self.sequences, tolerance=self.tolerance, method="quantileDetect")
         sequenceDisplay(self.sequences, self.speciesNames, self.genes, self.dnaCheck)
-    
+
     def dnaEditing(self):
         def deleteMode(firstTime=True):
             if firstTime:
@@ -2437,7 +2438,7 @@ class PhyloGenerator:
                         while geneLocker:
                             print "Enter the name of the gene you want to delete, or just hit enter to cancel."
                             geneInput = raw_input("DNA Editing (delete gene): ")
-                            
+
                             if geneInput:
                                 possibleGenes = [x[0] for x in self.genes]
                                 if geneInput in possibleGenes:
@@ -2488,7 +2489,7 @@ class PhyloGenerator:
                     return 'delete', False
             else:
                 return "EXIT", True
-        
+
         def reloadMode(firstTime=True):
             if not self.email:
                 print "\nPlease enter a valid email address to download sequence data from Genbank\n"
@@ -2507,7 +2508,7 @@ class PhyloGenerator:
                 print "\ttarget=X,Y - choose the sequence closest to length X "
                 print "\tEVERYTHING - reload all sequences"
                 print "Other modes: 'delete', 'trim', 'replace', 'merge'. Hit enter to continue.\n"
-            
+
             if not self.targetLength:
                 self.targetLength = [x[2] for x in self.dnaCheck['quantileLengths']]
             inputSeq = raw_input("DNA Editing (reload):")
@@ -2553,7 +2554,7 @@ class PhyloGenerator:
                             return 'reload', False
                     except:
                         pass
-                
+
                 try:
                     if int(inputSeq) in range(len(self.speciesNames)):
                         index = int(inputSeq)
@@ -2634,7 +2635,7 @@ class PhyloGenerator:
                     return 'reload', False
             else:
                 return "EXIT", True
-        
+
         def trimMode(firstTime=True):
             if firstTime:
                 print "\nTRIM MODE"
@@ -2732,7 +2733,7 @@ class PhyloGenerator:
                     return 'trim', False
             else:
                 return "EXIT", True
-        
+
         def replaceMode(firstTime=True):
             if not self.email:
                 print "\nPlease enter a valid email address to download sequence data from GenBank\n"
@@ -2832,7 +2833,7 @@ class PhyloGenerator:
                     #Find taxonomy
                     for i,sp in enumerate(self.speciesNames):
                         self.taxonomy.append(findLineage(sp))
-                    
+
                     print "...Taxonomy downloaded"
                     #Find highest unique level for each species
                     for i,sp in enumerate(self.speciesNames):
@@ -2846,9 +2847,9 @@ class PhyloGenerator:
                             else:
                                 uniqueLineage.append(currLevel)
                         self.uniqueTaxonomy.append(uniqueLineage)
-                    
+
                     print "...Taxonomy unique to each species found\n"
-                    
+
                     #Find any replacements, if necessary, using the taxonomy
                     for i,sp in enumerate(self.speciesNames):
                         tracker = 0
@@ -2912,7 +2913,7 @@ class PhyloGenerator:
                     return 'replace', False
             else:
                 return "EXIT", True
-        
+
         def mergeMode(firstTime=True):
             if firstTime:
                 print "\nMERGE MODE"
@@ -2973,7 +2974,7 @@ class PhyloGenerator:
                     return 'reload', False
             else:
                 return "EXIT", True
-        
+
         locker = True
         firstTime = True
         mode = "delete"
@@ -2994,7 +2995,7 @@ class PhyloGenerator:
                 if mode == "EXIT":
                     self.alignment = []
                     locker = False
-    
+
     def unmerge(self):
         def unmergeNewick(tree, sppList):
             Phylo.write(tree, 'mergedTempPhylogeny.tre', 'newick')
@@ -3014,7 +3015,7 @@ class PhyloGenerator:
             mergedTree = Phylo.read('mergedTempPhylogeny.tre', 'newick')
             os.remove('mergedTempPhylogeny.tre')
             return mergedTree
-        
+
         def unmergeBEAST(treeFile, speciesNames, sppList):
             with open(treeFile, 'r') as f:
                 for each in f:
@@ -3030,8 +3031,8 @@ class PhyloGenerator:
                 tree = Phylo.read(treeFile+"SMOOTH_TEMP", 'newick')
                 os.remove(treeFile+"SMOOTH_TEMP")
             return unmergeNewick(tree, sppList)
-        
-        
+
+
         if self.mergedSpp:
             if 'BEAST' in self.phylogenyMethods:
                 self.phylogenyMerged = unmergeBEAST(self.phylogeny, self.speciesNames, self.mergedSpp)
@@ -3045,7 +3046,7 @@ class PhyloGenerator:
             print "Smoothed tree successfully merged. Be aware that floating point precision issues may alter the tree's branchlengths."
         else:
             return False
-    
+
     def alignmentEditing(self):
         seqLengths = [0]*len(self.genes)
         for i,sp in enumerate(self.sequences):
@@ -3053,7 +3054,7 @@ class PhyloGenerator:
                 if gene:
                     if len(gene) > seqLengths[j]:
                         seqLengths[j] = len(gene)
-        
+
         alignmentDisplay(self.alignment, self.alignmentMethods, self.geneNames(), checkAlignmentList(self.alignment, method='everything'), seqLengths)
         print "\n\t'output' - write out alignments. I recommend you look at your alignment before continuing"
         print "\t'DNA' - return to DNA editing stage"
@@ -3140,7 +3141,7 @@ class PhyloGenerator:
                                         methodTrees.append(RAxML(method, 'localVersion'))
                                     geneTrees.append(methodTrees)
                                 trees.append([item for sublist in geneTrees for item in sublist])
-                                
+
                                 #Now calculate distances between methods
                                 print "Mean within gene distances:"
                                 print self.geneNames()[i] + ":"
@@ -3161,7 +3162,7 @@ class PhyloGenerator:
                                 pass
                         except ValueError:
                             print "Sorry, how many times? Try again - something like 'raxml=5'."
-                
+
                 elif inputAlign == 'clustal-x2':
                     webbrowser.open('http://www.clustal.org/clustal2/#Download')
                 else:
@@ -3186,7 +3187,7 @@ class PhyloGenerator:
         else:
             for i,gene in enumerate(self.genes):
                 self.alignment[i] = self.alignment[i][0]
-    
+
     def align(self):
         methods = ['muscle', 'mafft', 'clustalo', 'prank', 'everything', 'quick']
         if not self.alignmentMethod:
@@ -3215,7 +3216,7 @@ class PhyloGenerator:
             self.alignmentMethods = ['muscle', 'mafft', 'clustalo']
         else:
             self.alignmentMethods = [self.alignmentMethod]
-    
+
     def phylogen(self, method="raxml-localVersion"):
         def raxmlSetup(options=False):
             def parseOptions(inputStr):
@@ -3237,7 +3238,7 @@ class PhyloGenerator:
                 if 'partitions' in inputStr:
                     methods += 'partitions-'
                 return methods
-            
+
             if len(self.alignment) > 1:
                 align, partitions = self.concatenateSequences()
             else:
@@ -3248,7 +3249,7 @@ class PhyloGenerator:
                     self.phylogenyMethods = ''
                 else:
                     self.phylogenyMethods = 'RAxML-' + parseOptions(options)
-            
+
             if not self.phylogenyMethods:
                 print "RAXML:"
                 print "\t 'integratedBootstrap=X' - conduct X number of bootstraps and a thorough ML search in one run (!)"
@@ -3271,9 +3272,9 @@ class PhyloGenerator:
                         self.phylogenyMethods = 'RAxML-'
                         print "...running RAxML with default options:", self.phylogenyMethods
                         raxmlLock = False
-            
+
             self.phylogeny = RAxML(align, method=self.phylogenyMethods+'localVersion', constraint=self.constraint, timeout=999999, partitions=partitions)
-        
+
         def beastSetup(options=False):
             def parseOptions(inputStr):
                 methods = ''
@@ -3332,14 +3333,14 @@ class PhyloGenerator:
                             methods += '-burnin='+str(burnin)
                             break
                 return methods, logRate, screenRate, chainLength, overwrite, burnin
-            
+
             if options:
                 if not parseOptions(options)[0]:
                     print "ERROR! Your BEAST options (", options, ") were not recognised. Please re-enter below."
                 else:
                     self.phylogenyMethods, logRate, screenRate, chainLength, overwrite, burnin = parseOptions(options)
                     self.phylogenyMethods = 'BEAST' + self.phylogenyMethods
-            
+
             if not self.phylogenyMethods:
                 print "BEAST:"
                 print "\t 'GTR' - use a GTR model (default) (!)"
@@ -3380,7 +3381,7 @@ class PhyloGenerator:
                         self.phylogenyMethods, logRate, screenRate, chainLength, overwrite, burnin = parseOptions('')
                         self.phylogenyMethods = 'BEAST-GTR-GAMMA'
                         beastLock = False
-            
+
             if not 'GTR' in self.phylogenyMethods and not 'HKY' in self.phylogenyMethods:
                 self.phylogenyMethods += '-GTR-GAMMA'
             print "...running BEAST with options ", self.phylogenyMethods
@@ -3389,7 +3390,7 @@ class PhyloGenerator:
                 self.phylogeny, self.beastXML, self.beastTrees, self.beastLogs = BEAST(self.alignment, method=self.phylogenyMethods, constraint=self.constraint, timeout=999999, chainLength=chainLength, logRate=logRate, screenRate=screenRate, overwrite=overwrite, burnin=burnin)
             else:
                 self.phylogeny, self.beastXML, self.beastTrees, self.beastLogs  = BEAST(self.alignment[0], method=self.phylogenyMethods, constraint=self.constraint, timeout=999999, chainLength=chainLength, logRate=logRate, screenRate=screenRate, overwrite=overwrite, burnin=burnin)
-        
+
         if self.phylogenyMethods:
             if 'beast' in self.phylogenyMethods:
                 beastSetup(self.phylogenyMethods)
@@ -3398,12 +3399,12 @@ class PhyloGenerator:
             else:
                 print "I don't understand your phylogeny construction method", self.phylogenyMethods, ". Please enter one now."
                 self.phylogenyMethods = ''
-        
+
         if not self.phylogenyMethods:
             print "You can either build a maximum likelihood tree ('raxml') or a Bayesian tree ('beast')"
             print "If unsure, hit enter to use RAxML - using BEAST safely will require some knowledge of phylogenetics"
             print ""
-            
+
             locker = True
             while locker:
                 phyloInput = raw_input("Phylogeny Building (default raxml): ")
@@ -3420,7 +3421,7 @@ class PhyloGenerator:
                     print "...using RAxML..."
                     raxmlSetup('')
                     locker= False
-    
+
     def rateSmooth(self):
         def PATHd8():
             if sys.platform == 'win32':
@@ -3466,7 +3467,7 @@ class PhyloGenerator:
                     print "...cancelling rate-smoothing and continuing..."
                     pathd8Locker = False
             return True
-        
+
         def smoothBEAST():
             print "You're about to perform a BEAST search with the topology constrained to that of your best phylogen(y/ies)."
             print "This means you have a choice of BEAST options:"
@@ -3545,8 +3546,8 @@ class PhyloGenerator:
                     else:
                         self.smoothPhylogeny, self.smoothBeastXML, self.smoothBeastTrees, self.smoothBeastLogs = BEAST(self.alignment[0], method=self.rateSmoothMethods, constraint=self.phylogeny, logRate=logRate, screenRate=screenRate, chainLength=chainLength, overwrite=overwrite, timeout=999999, burnin=burnin, tempStem='beast_smooth')
                     beastLock = False
-        
-        
+
+
         print "\nYou can now rate-smooth your phylogeny (i.e., make its branch lengths proportional to evolutionary time)."
         print "\t'pathd8' - rate-smooth using PATHd8 (fastest!)"
         print "\t'beast' - rate-smooth using BEAST (doesn't require you to specify an outgroup)"
@@ -3567,7 +3568,7 @@ class PhyloGenerator:
             else:
                 print "...continuing without rate-smoothing"
                 locker = False
-    
+
     def cleanUpSequences(self):
         cleaned = []
         for i,sp in reversed(list(enumerate(self.sequences))):
@@ -3580,7 +3581,7 @@ class PhyloGenerator:
                 #   self.sequences[i][j].id = self.speciesNames[i]
                 #   self.sequences[i][j].name = self.speciesNames[i]
                 #   self.sequences[i][j].description = 'Empty sequence made up by phyloGenerator'
-            
+
             if not foundSequence:
                 cleaned.append(self.speciesNames[i])
                 del self.sequences[i]
@@ -3588,7 +3589,7 @@ class PhyloGenerator:
                 del self.sequenceEdits[i]
                 if self.taxonomy:
                     del self.taxonomy[i]
-        
+
         if cleaned:
             print "\nThe following species did not have any DNA associated with them, and so have been excluded:"
             for each in cleaned:
@@ -3622,16 +3623,16 @@ class PhyloGenerator:
                     self.constraint = False
                     self.constraintFile = False
                     print "Constraint tree deleted; you will be given another chance to input one later"
-    
+
     def renameSequences(self):
         for i,name in enumerate(self.speciesNames):
             self.speciesNames[i] = name.replace(" ", "_")
-        
+
         if self.mergedSpp:
             for i,sppList in enumerate(self.mergedSpp):
                 for j,sp in enumerate(sppList):
                     self.mergedSpp[i][j] = sp.replace(" ", "_")
-        
+
         for i in range(len(self.sequences)):
             tGenBankIDs = []
             for k in range(len(self.genes)):
@@ -3641,7 +3642,7 @@ class PhyloGenerator:
                 else:
                     tGenBankIDs.append("NO_SEQUENCE")
             self.genBankIDs.append(tGenBankIDs)
-    
+
     def writeOutput(self):
         #Change working directory
         os.chdir(self.workingDirectory)
@@ -3654,14 +3655,14 @@ class PhyloGenerator:
                     if seq[i]:
                         currentGene.append(seq[i])
                 SeqIO.write(currentGene, self.stem+"_"+gene+".fasta", 'fasta')
-        
+
         #Alignment
         if type(self.alignment) is list:
             for i,align in enumerate(self.alignment):
                 AlignIO.write(align, self.stem+"_"+self.geneNames()[i]+"_alignment.fasta", 'fasta')
         else:
             AlignIO.write(self.alignment, self.stem+"_alignment.fasta", 'fasta')
-        
+
         #Sequence info
         if self.genBankIDs:
             for i,gene in enumerate(self.geneNames()):
@@ -3669,7 +3670,7 @@ class PhyloGenerator:
                     f.write("Species Name, Sequence ID, Sequence Edits\n")
                     for j,name in enumerate(self.speciesNames):
                         f.write(",".join([name, self.genBankIDs[j][i], self.sequenceEdits[j][i]]) + "\n")
-        
+
         #Phylogeny
         if self.phylogenyMerged:
             if 'BEAST' in self.phylogenyMethods:
@@ -3681,7 +3682,7 @@ class PhyloGenerator:
             else:
                 Phylo.write(self.phylogenyMerged, self.stem+"_MERGED_phylogeny.tre", 'newick')
                 Phylo.write(self.phylogeny, self.stem+"_RAW_phylogeny.tre", 'newick')
-        
+
         else:
             if self.phylogeny:
                 if 'BEAST' in self.phylogenyMethods:
@@ -3691,11 +3692,11 @@ class PhyloGenerator:
                     os.rename(self.oldDirectory + '/' + self.beastLogs, self.stem+"_"+self.geneNames()[i]+"_RAW_BEAST.log")
                 else:
                     Phylo.write(self.phylogeny, self.stem+"_phylogeny.tre", 'newick')
-        
+
         #Constraint tree
         if self.constraint:
             Phylo.write(self.constraint, self.stem+"_constraint.tre", 'newick')
-        
+
         #Taxonomy
         if self.taxonomy:
             with open(self.stem+"_taxonomy.txt", 'w') as f:
@@ -3703,7 +3704,7 @@ class PhyloGenerator:
                 for i,each in enumerate(self.taxonomy):
                     if each:
                         f.write(",".join(each) + "\n")
-        
+
         #Smoothed phylogeny
         if self.smoothPhylogeny:
             if self.smoothPhylogenyMerged:
@@ -3724,7 +3725,7 @@ class PhyloGenerator:
                     os.rename(self.oldDirectory + '/' + self.smoothBeastLogs, self.stem+"_"+self.geneNames()[i]+"_RAW_smoothed_BEAST.log")
                 else:
                     Phylo.write(self.smoothPhylogeny, self.stem+"_smoothed_phylogeny.tre", 'newick')
-    
+
     def getConstraint(self, fileName=""):
         def newickConstraint():
             if self.constraintFile:
@@ -3755,7 +3756,7 @@ class PhyloGenerator:
                         print "...No constraint tree loaded"
                         locker = False
                         return False
-        
+
         def phylomatic():
             if self.phylomaticTaxonomy and self.phylomaticPhylogeny:
                 try:
@@ -3765,7 +3766,7 @@ class PhyloGenerator:
                     print "Phylomatic didn't work - check your input files"
                     print "Returning you to constraint method choice prompt...\n"
                     self.phylomaticTaxonomy, self.phylomaticPhylogeny = False, False
-            
+
             print "\nCreating a constraint tree using Phylomatic."
             if not self.phylomaticPhylogeny:
                 print "Enter the filename of the reference phylogeny (in newick format) below. Hit enter to abort"
@@ -3804,7 +3805,7 @@ class PhyloGenerator:
             except:
                 print "Returning you to constraint method choice prompt...\n"
                 return True
-        
+
         def taxonomy():
             if not self.email:
                 print "\nPlease enter a valid email address to download sequence data from GenBank\n"
@@ -3817,7 +3818,7 @@ class PhyloGenerator:
                 self.taxonomy.append(findLineage(sp))
             print "...lineages found!"
             return True
-        
+
         stopper = True
         if not self.constraintMethod:
             print "I recommend you use a constraint tree with this program"
@@ -3863,7 +3864,7 @@ class PhyloGenerator:
                 phylomatic()
             elif self.constraintMethod == 'taxonomy':
                 taxonomy()
-            
+
             else:
                 print "Error in constraint tree method name."
                 #do something better here please!
@@ -3934,7 +3935,7 @@ class PhyloGenerator:
                         print "Sorry, I didn't get that. Please try again."
                 else:
                     checkLocker = False
-    
+
     def checkConstraint(self):
         if self.constraint:
             tipLabels = [x.name for x in self.constraint.get_terminals()]
@@ -3948,7 +3949,7 @@ class PhyloGenerator:
                 return False
         else:
             return False
-    
+
     def padAlignment(self):
         if len(self.genes) > 1:
             lengths = set([len(x) for x in self.alignment])
@@ -3959,7 +3960,7 @@ class PhyloGenerator:
                     for j,seq in enumerate(align):
                         if seq.id not in spp:
                             spp.append(seq.id)
-                
+
                 for i,align in enumerate(self.alignment):
                     present = [x.id for x in align]
                     absent = list(set(spp) - set(present))
@@ -3968,7 +3969,7 @@ class PhyloGenerator:
                         tempSeq.id = sp
                         tempSeq.description = "made up by phyloGenerator"
                         align.append(tempSeq)
-                
+
                 sortedAligns = []
                 spp.sort()
                 for i,align in enumerate(self.alignment):
@@ -3979,9 +3980,9 @@ class PhyloGenerator:
                                 holder.append(seq)
                                 break
                     sortedAligns.append(MultipleSeqAlignment(holder))
-                
+
                 self.alignment = sortedAligns
-    
+
     def concatenateSequences(self):
         if len(self.genes) > 1:
             partitions = [0, self.alignment[0].get_alignment_length()]
@@ -3992,14 +3993,14 @@ class PhyloGenerator:
             for i,x in enumerate(self.speciesNames):
                 tempAlignment[i].id = self.speciesNames[i].replace(' ', '_')
         return tempAlignment, partitions
-    
+
     def APICheck(self):
         if self.tracker == self.spacer:
             time.sleep(self.delay)
             self.tracker = 0
         else:
             self.tracker += 1
-    
+
     def geneNames(self):
         return [x[0] for x in self.genes]
 
@@ -4024,7 +4025,7 @@ def main():
         print "When downloading sequence data, you will see warnings relating to"
         print "'missing DTD files. Do not be alarmed; this is normal, and will"
         print "have no effect on your output."
-        
+
         #Startup
         currentState = PhyloGenerator(args)
 
@@ -4034,25 +4035,25 @@ def main():
             if not len(currentState.sequences):
                 print "\nDNA INPUT"
                 currentState.loadDNAFile()
-            
+
             #DNA from GenBank
             if not len(currentState.sequences):
                 print "\nDNA DOWNLOAD"
                 currentState.loadGenBank()
-            
+
             #DNA Assertion
             if not len(currentState.sequences):
                 print "\nNo DNA, or list of species for which to download DNA, loaded. Exiting."
                 sys.exit()
-            
-            
+
+
             #Gene number checking
             if len(currentState.sequences[0]) != len(currentState.genes):
                 print "\nERROR: You have specified that you have more genes that you have data for."
                 print "In all likelihood, you've supplied your own DNA, but said you have more than one gene."
                 print "Unable to continue; exiting"
                 sys.exit()
-            
+
             #DNA Checking
             print "\nDNA CHECKING"
             currentState.dnaChecking()
@@ -4065,15 +4066,15 @@ def main():
             print "\tREPLACE species for which you can't find sequence data (use the 'THOROUGH' command)"
             print "\tIf you have alignment problems, you can return to this stage"
             currentState.dnaEditing()
-            
+
             #DNA Cleanup and renaming
             currentState.cleanUpSequences()
             currentState.renameSequences()
-            
+
             #Alignment
             print "\nDNA ALIGNMENT"
             currentState.align()
-            
+
             print "\nALIGNMENT CHECKING"
             currentState.alignmentEditing()
         else:
@@ -4081,17 +4082,17 @@ def main():
             print ""
             print "Alignment already provided; skipping all sequence editing"
             print "\tWarning: proceeding without checking your alignment, either in pG or by hand, is a *very bad idea*!"
-            
+
         #Add blank alignment entries for BEAST/RAxML for the missing species
         currentState.padAlignment()
         #Constraint tree
         print "\nCONSTRAINT TREE"
         currentState.getConstraint()
-        
+
         #Phylogeny building
         print "\nPHYLOGENY BUILDING"
         currentState.phylogen()
-        
+
         #Rate smoothing
         if 'BEAST' in currentState.phylogenyMethods:
             print "\nSKIPPING RATE SMOOTHING STEP"
@@ -4099,10 +4100,10 @@ def main():
         else:
             print "\nRATE SMOOTHING"
             currentState.rateSmooth()
-        
+
         #Handle merged species
         currentState.unmerge()
-        
+
         #Output
         currentState.writeOutput()
         print "\nCongratulations! Exiting phyloGenerator."
